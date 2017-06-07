@@ -1,6 +1,6 @@
 module MyMatching
 
-function my_deffered_acceptance(m_prefs, f_prefs)
+function my_deferred_acceptance(m_prefs, f_prefs)
 #(m_prefs、f_prefs）を渡すとm_matchedとf_matchedが返る関数
 
 m=length(m_prefs)
