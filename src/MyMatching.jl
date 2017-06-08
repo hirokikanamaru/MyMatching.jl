@@ -32,13 +32,13 @@ end
 
 for j in 1:n
 #男性の選好リストの１巡目、2巡目…
-    if all(m_matched.!=0)||all(f_matched.!=0)
-    #もし既に男女のどちらかが全員マッチしていたら次の巡目に入らずmatchedを返す
-        break
-        return m_matched, f_matched
-    else
-        for i in 1:m
+    for i in 1:m
         #各男性が順に動く
+        if all(m_matched.!=0)||all(f_matched.!=0)
+        #もし既に男女のどちらかが全員マッチしていたら次の人に入らずmatchedを返す
+            break
+            return m_matched, f_matched
+        else
             if j<=length(m_prefs[i])&&m_matched[i]==0
             #ある男性がj巡目に、まだ選好を持ち、相手がいない
                 like=m_prefs[i][j]
