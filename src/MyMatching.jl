@@ -66,5 +66,3 @@ return m_matched, f_matched
 
 end
 #関数の定義終了
-
-end
