@@ -34,8 +34,8 @@ for j in 1:n
 #男性の選好リストの１巡目、2巡目…
     for i in 1:m
         #各男性が順に動く
-        if n>m&&all(m_matched.!=0)
-        #もし既に男女のどちらかが全員マッチしていたら次の人に入らずmatchedを返す
+        if n>=m&&all(m_matched.!=0)
+        #もし女の方が多く、男が全員マッチしていたら次の人に入らずmatchedを返す
             break
             return m_matched, f_matched
         else
