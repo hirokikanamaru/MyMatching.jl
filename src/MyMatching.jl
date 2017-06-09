@@ -7,8 +7,8 @@ m=length(m_prefs)
 n=length(f_prefs)
 
 #全ての要素が０の配列を作る
-m_matched=Array{Int64}(m)
-f_matched=Array{Int64}(n)
+m_matched=Vector{Int64}(m)
+f_matched=Vector{Int64}(n)
 m_matched[:]=0
 f_matched[:]=0
 
