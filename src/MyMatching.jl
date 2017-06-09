@@ -1,7 +1,5 @@
 module MyMatching
 
-export my_deferred_acceptance
-
 function my_deferred_acceptance(m_prefs, f_prefs)
 #(m_prefs、f_prefs）を渡すとm_matchedとf_matchedが返る関数
 
@@ -66,5 +64,5 @@ return m_matched, f_matched
 
 end
 #関数の定義終了
-
+export my_deferred_acceptance
 end
