@@ -7,14 +7,12 @@ m=length(m_prefs)
 n=length(f_prefs)
 
 #全ての要素が０の配列を作る
-m_matched=Vector{Int64}(m)
-f_matched=Vector{Int64}(n)
-m_matched[:]=0
-f_matched[:]=0
+m_matched = zeros(Int64, m)
+f_matched = zeros(Int64, n)
 
 #男のインデックスと女のインデックスを渡すと、その男の順位が返ってくる関数（男が選好リストに入っていなければ０が返る）
 function ranking(man ,woman)
-    if !(any(man in f_prefs[woman][i] for i in 1:length(f_prefs[woman])))
+    if !(man in f_prefs[woman])
         return 0
     #女性の選好の中に男性が入っていなければ０を返す
     else
@@ -27,32 +25,30 @@ function ranking(man ,woman)
     end
 end
 
-
-for j in 1:n
-#男性の選好リストの１巡目、2巡目…
-    for i in 1:m
-        #各男性が順に動く
-        if n>=m&&all(m_matched.!=0)
-        #もし女の方が多く、男が全員マッチしていたら次の人に入らずmatchedを返す
-            break
+count=zeros(Int64, m) #巡目と使われた選好リストとのずれをcountで表す
+for j in 1:n #男性の選好リストの１巡目、2巡目…
+    for i in 1:m #各男性が順に動く
+        if all(m_matched.!=0) #もし男が全員マッチしていたら次の人に入らずmatchedを返す
             return m_matched, f_matched
         else
-            if j<=length(m_prefs[i])&&m_matched[i]==0
-            #ある男性がj巡目に、まだ選好を持ち、相手がいない
-                like=m_prefs[i][j]
-                #iさんj巡目のプロポーズ相手をlikeと定義する
-
-                if ranking(i, like)!=0
-                #プロポーズ相手の女性の選好リストにiさんが載っている
-                    if  f_matched[like]==0
-                        m_matched[i]=like
-                        f_matched[like]=i
+            if  j<=length(m_prefs[i])+count[i]
+            #その男性が、マッチ済みで飛ばされた巡目を考慮したうえで、選好リストを使い切っていないならば
+                if  m_matched[i]!=0
+                    count[i]+=1 #既にマッチしている場合、プロポーズは行わず、ずれを１増やす
+                else
+                    like=m_prefs[i][j-count[i]]
+                #iさんj巡目のプロポーズ相手をlikeと定義する（countは飛ばされた巡目を反映）
+                    if ranking(i, like)!=0 #プロポーズ相手の女性の選好リストにiさんが載っている
+                        if  f_matched[like]==0
+                            m_matched[i]=like
+                            f_matched[like]=i
                     #女性に相手がいなければ、#マッチしているリストに追加
-                    elseif ranking(i, like)<ranking(f_matched[like],like)
-                        m_matched[f_matched[like]]=0
-                        m_matched[i]=like
-                        f_matched[like]=i
+                        elseif ranking(i, like)<ranking(f_matched[like],like)
+                            m_matched[f_matched[like]]=0
+                            m_matched[i]=like
+                            f_matched[like]=i
                     #既にマッチしている人より順位が高い（数字が小さい）とき、既にマッチしていた組を変更する
+                        end
                     end
                 end
             end
