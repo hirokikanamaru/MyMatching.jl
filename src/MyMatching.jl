@@ -24,16 +24,18 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
         worstindex=0 #indptrの中でどこに格納されているか
         for (index, prop) in enumerate(resp_matches[indptr[resp]:indptr[resp+1]-1])
         #respがマッチ済みのpropに対して
+            if prop!=0
             worstranknew=find(x->(x==prop),resp_prefs[resp])[1]
             #respの選好の中での順位
-            if worstranknew>worstrank #順位が大きい（悪い）ならば変更する
-                worstrank=worstranknew
-                worstindex=index
+                if worstranknew>worstrank #順位が大きい（悪い）ならば変更する
+                    worstrank=worstranknew
+                    worstindex=index
+                end
             end
         end
 
         if find(x->(x==i),resp_prefs[resp])[1]<worstrank
-            return worst=(worstindex, resp_prefs[worstrank])
+            return worstindex, resp_prefs[worstrank]
             #一番低いpropとそのindptr内での位置が返る
         else
             return 0
@@ -58,14 +60,14 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
                         if i in resp_prefs[like] #プロポーズ相手の選好リストにiさんが載っている
                             index=searchsortedfirst(-resp_matches[indptr[like]:indptr[like+1]-1],0)
                         #respがcapacityを使い切っているか
-                            if  index==1
+                            if  index<=caps[like]
                                 prop_matches[i]=like
-                                resp_matches[indptr[like+index-1]]=i
+                                resp_matches[indptr[like]+index-1]=i
                         #respがcapacityを使い切っていないなら、各々追加
                             elseif worst(like,i)!=0
                                 prop_matches[i]=like
                                 prop_matches[worst(like,i)[2]]=0
-                                resp_matches[indptr[like+worst(like,i)[1]-1]]=i
+                                resp_matches[indptr[like]+worst(like,i)[1]-1]=i
                         #既にマッチしている人より順位が高い（数字が小さい）とき、既にマッチしていた組を変更する
                             end
                         end
