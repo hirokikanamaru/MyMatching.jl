@@ -11,50 +11,61 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
     prop_matches = zeros(Int64, m)
     resp_matches = zeros(Int64, sum(caps))
 
+    #indptrを作成
     indptr = Array{Int}(n+1)
     indptr[1] = 1
     for i in 1:n
         indptr[i+1] = indptr[i] + caps[i]
     end
 
-    #respのインデックスを渡すと、respとmatchしているpropの中で一番順位の低いpropが返る
-    function worst(resp,j)
-        worstrank=0
-        worstindex=0
-        for (index, prop) in enumerate(resp_matches[indptr[j]:indptr[j+1]-1])
+    #respの番号とpropの番号を渡すと、respとmatchしているpropの中で一番順位の低いpropとそのindexが返る関数
+    function worst(resp,i)
+        worstrank=0 #respの選好の中での順位
+        worstindex=0 #indptrの中でどこに格納されているか
+        for (index, prop) in enumerate(resp_matches[indptr[resp]:indptr[resp+1]-1])
+        #respがマッチ済みのpropに対して
             worstranknew=find(x->(x==prop),resp_prefs[resp])
-            if worstranknew>worstrank
+            #respの選好の中での順位
+            if worstranknew>worstrank #順位が大きい（悪い）ならば変更する
                 worstrank=worstranknew
                 worstindex=index
             end
         end
-        return worst=(worstindex, resp_prefs[worstrank])
+
+        if find(x->(x==i),resp_prefs[resp])<worstrank
+            return worst=(worstindex, resp_prefs[worstrank])
+            #一番低いpropとそのindptr内での位置が返る
+        else
+            return 0
+        end
+
     end
 
 
-    gap=zeros(Int64, m) #巡目と使われた選好リストとのずれをcountで表す
+    gap=zeros(Int64, m) #巡目と使われた選好リストとのずれをgapで表す
     for j in 1:n #propse側の選好リストの１巡目、2巡目…
         for i in 1:m #propose側が順に動く
-            if all(prop_matches.!=0) #もし男が全員マッチしていたら次の人に入らずmatchedを返す
+            if all(prop_matches.!=0) #もしproposerが全員マッチしていたら次の人に入らずmatchesを返す
                 return prop_matches, resp_matches, indptr
             else
                 if  j<=length(prop_prefs[i])+gap[i]
-                #その男性が、マッチ済みで飛ばされた巡目を考慮したうえで、選好リストを使い切っていないならば
+                #proposerが、マッチ済みで飛ばされた巡目を考慮したうえで、選好リストを使い切っていないならば
                     if  prop_matches[i]!=0
                         gap[i]+=1 #既にマッチしている場合、プロポーズは行わず、ずれを１増やす
                     else
                         like=prop_prefs[i][j-gap[i]]
-                    #iさんj巡目のプロポーズ相手をlikeと定義する（countは飛ばされた巡目を反映）
-                        if i in resp_prefs[like] #プロポーズ相手の女性の選好リストにiさんが載っている
-                            index=searchsortedfirst(-resp_matches[indptr[j]:indptr[j+1]-1],0)
+                    #iさんj巡目のプロポーズ相手をlikeと定義する（gapは飛ばされた巡目を反映）
+                        if i in resp_prefs[like] #プロポーズ相手の選好リストにiさんが載っている
+                            index=searchsortedfirst(-resp_matches[indptr[like]:indptr[like+1]-1],0)
+                        #respがcapacityを使い切っているか
                             if  index==1
                                 prop_matches[i]=like
-                                resp_matches[indptr[j+index-1]]=i
-                        #女性に相手がいなければ、#マッチしているリストに追加
-                            elseif
+                                resp_matches[indptr[like+index-1]]=i
+                        #respがcapacityを使い切っていないなら、各々追加
+                            elseif worst(like,i)!=0
                                 prop_matches[i]=like
-                                prop_matches[worst(like,j)[2]]=0
-                                resp_matches[indptr[j+worst(like,j)[1]-1]]=i
+                                prop_matches[worst(like,i)[2]]=0
+                                resp_matches[indptr[like+worst(like,i)[1]-1]]=i
                         #既にマッチしている人より順位が高い（数字が小さい）とき、既にマッチしていた組を変更する
                             end
                         end
