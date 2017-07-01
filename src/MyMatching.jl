@@ -24,7 +24,7 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
         worstindex=0 #indptrの中でどこに格納されているか
         for (index, prop) in enumerate(resp_matches[indptr[resp]:indptr[resp+1]-1])
         #respがマッチ済みのpropに対して
-            worstranknew=find(x->(x==prop),resp_prefs[resp])
+            worstranknew=find(x->(x==prop),resp_prefs[resp])[1]
             #respの選好の中での順位
             if worstranknew>worstrank #順位が大きい（悪い）ならば変更する
                 worstrank=worstranknew
@@ -32,7 +32,7 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
             end
         end
 
-        if find(x->(x==i),resp_prefs[resp])<worstrank
+        if find(x->(x==i),resp_prefs[resp])[1]<worstrank
             return worst=(worstindex, resp_prefs[worstrank])
             #一番低いpropとそのindptr内での位置が返る
         else
