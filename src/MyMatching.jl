@@ -64,7 +64,8 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
                                 prop_matches[i]=like
                                 resp_matches[indptr[like]+index-1]=i
                         #respがcapacityを使い切っていないなら、各々追加
-                            
+                        
+                        #既にマッチしている人より順位が高い（数字が小さい）とき、既にマッチしていた組を変更する
                             end
                         end
                     end
