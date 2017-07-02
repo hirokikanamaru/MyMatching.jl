@@ -34,7 +34,12 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
             end
         end
 
-        return worstindex, resp_prefs[worstrank]
+        if find(x->(x==i),resp_prefs[resp])[1]<worstrank
+            return worstindex, resp_prefs[resp][worstrank]
+            #一番低いpropとそのindptr内での位置が返る
+        else
+            return 0
+        end
     end
 
 
