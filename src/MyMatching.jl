@@ -33,6 +33,8 @@ function my_deferred_acceptance(prop_prefs::Vector{Vector{Int}},
                 end
             end
         end
+
+        return worstindex, resp_prefs[worstrank]
     end
 
 
